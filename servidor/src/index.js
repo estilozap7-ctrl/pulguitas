@@ -27,8 +27,8 @@ app.use((err, req, res, next) => {
     res.status(status).send(message);
 });
 
-sequelize.sync({ force: false }).then(() => {
-    console.log('Database connected');
+sequelize.sync({ alter: true }).then(() => {
+    console.log('Database connected and synced (alter)');
     app.listen(PORT, () => {
         console.log(`Server listening on port ${PORT}`);
     });

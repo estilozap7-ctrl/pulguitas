@@ -15,6 +15,10 @@ const Category = sequelize.define('Category', {
     type: {
         type: DataTypes.ENUM('PRODUCTO', 'SERVICIO'),
         allowNull: false
+    },
+    image_url: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }, {
     timestamps: false

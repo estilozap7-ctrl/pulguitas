@@ -21,6 +21,28 @@ const Product = sequelize.define('Product', {
     stock: {
         type: DataTypes.INTEGER,
         defaultValue: 0
+    },
+    target_animal: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: 'Todos'
+    },
+    brand: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    features: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    subcategory_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true // Puede dejarse null temporalmente para registros antiguos
+    },
+    life_stage: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: 'Todas las edades'
     }
 }, {
     timestamps: true

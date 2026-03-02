@@ -1,5 +1,6 @@
 const User = require('./User');
 const Category = require('./Category');
+const Subcategory = require('./Subcategory');
 const Product = require('./Product');
 const Service = require('./Service');
 const Animal = require('./Animal');
@@ -13,12 +14,15 @@ const Availability = require('./Availability');
 User.hasMany(Animal, { foreignKey: 'owner_id' });
 Animal.belongsTo(User, { foreignKey: 'owner_id', as: 'owner' });
 
-// CATEGORIES
-Category.hasMany(Product, { foreignKey: 'category_id' });
-Product.belongsTo(Category, { foreignKey: 'category_id' });
+// CATEGORIES AND SUBCATEGORIES
+Category.hasMany(Subcategory, { foreignKey: 'category_id' });
+Subcategory.belongsTo(Category, { foreignKey: 'category_id', as: 'category' });
+
+Subcategory.hasMany(Product, { foreignKey: 'subcategory_id' });
+Product.belongsTo(Subcategory, { foreignKey: 'subcategory_id', as: 'subcategory' });
 
 Category.hasMany(Service, { foreignKey: 'category_id' });
-Service.belongsTo(Category, { foreignKey: 'category_id' });
+Service.belongsTo(Category, { foreignKey: 'category_id', as: 'category' });
 
 // SALES
 User.hasMany(Sale, { foreignKey: 'client_id' });
@@ -29,6 +33,9 @@ Sale.belongsTo(User, { foreignKey: 'staff_id', as: 'staff' });
 
 Sale.hasMany(SaleDetail, { foreignKey: 'sale_id' });
 SaleDetail.belongsTo(Sale, { foreignKey: 'sale_id' });
+
+Product.hasMany(SaleDetail, { foreignKey: 'product_id' });
+SaleDetail.belongsTo(Product, { foreignKey: 'product_id', as: 'product' });
 
 // APPOINTMENTS
 User.hasMany(Appointment, { foreignKey: 'client_id' });
@@ -56,6 +63,7 @@ ActivityLog.belongsTo(Sale, { foreignKey: 'sale_id' });
 module.exports = {
     User,
     Category,
+    Subcategory,
     Product,
     Service,
     Animal,

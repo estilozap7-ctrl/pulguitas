@@ -1,31 +1,55 @@
-import React from 'react'
-import { Package, Activity, Heart, MoreHorizontal } from 'lucide-react'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
+// Layout
+import Layout from './components/shared/Layout';
+
+// Pages
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import PetList from './pages/PetList';
+import AppointmentList from './pages/AppointmentList';
+import Inventory from './pages/Inventory';
+import POS from './pages/POS';
+import Audit from './pages/Audit';
+
+// Rutas Protegidas
+const PrivateRoute = ({ children, allowedRoles }) => {
+    const { isAuthenticated, user, loading } = useSelector((state) => state.auth);
+
+    if (loading) return <div>Cargando...</div>;
+    if (!isAuthenticated) return <Navigate to="/login" replace />;
+
+    if (allowedRoles && user && !allowedRoles.includes(user.role)) {
+        return <Navigate to="/dashboard" replace />; // O a una pagina de 'No autorizado'
+    }
+
+    return children;
+};
 
 function App() {
-    const categories = [
-        { title: 'Alimentos', icon: <Package />, description: 'Venta para domésticos' },
-        { title: 'Actividades', icon: <Activity />, description: 'Recreación y entrenamiento' },
-        { title: 'Salud', icon: <Heart />, description: 'Higiene y medicina' },
-        { title: 'Varios', icon: <MoreHorizontal />, description: 'Accesorios y otros' },
-    ];
-
     return (
-        <div className="min-h-screen bg-gray-950 text-white p-12">
-            <header className="mb-12">
-                <h1 className="text-4xl font-bold text-indigo-500">Pulguitas Veterinaria</h1>
-                <p className="text-gray-400 mt-2">Gestión de Inventario y Actividades</p>
-            </header>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {categories.map((cat, i) => (
-                    <div key={i} className="p-8 bg-gray-900 border border-gray-800 rounded-2xl hover:border-indigo-500 transition cursor-pointer">
-                        <div className="mb-4 text-indigo-400">{cat.icon}</div>
-                        <h2 className="text-xl font-semibold mb-2">{cat.title}</h2>
-                        <p className="text-gray-500 text-sm">{cat.description}</p>
-                    </div>
-                ))}
-            </div>
-        </div>
-    )
+        <Router>
+            <Routes>
+                {/* Rutas Publicas */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+
+                {/* Rutas Privadas envueltas en Layout */}
+                <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
+                    <Route index element={<Navigate to="/dashboard" replace />} />
+                    <Route path="dashboard" element={<Dashboard />} />
+                    <Route path="mascotas" element={<PetList />} />
+                    <Route path="citas" element={<AppointmentList />} />
+                    <Route path="inventario" element={<PrivateRoute allowedRoles={['ADMIN', 'STAFF']}><Inventory /></PrivateRoute>} />
+                    <Route path="pos" element={<PrivateRoute allowedRoles={['ADMIN', 'STAFF']}><POS /></PrivateRoute>} />
+                    <Route path="auditoria" element={<PrivateRoute allowedRoles={['ADMIN']}><Audit /></PrivateRoute>} />
+                </Route>
+            </Routes>
+        </Router>
+    );
 }
 
-export default App
+export default App;

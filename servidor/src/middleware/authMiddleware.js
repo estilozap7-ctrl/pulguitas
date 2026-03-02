@@ -30,4 +30,12 @@ const isAdmin = (req, res, next) => {
     }
 };
 
-module.exports = { verifyToken, isAdmin };
+const isStaffOrAdmin = (req, res, next) => {
+    if (req.user && (req.user.role === 'STAFF' || req.user.role === 'ADMIN')) {
+        next();
+    } else {
+        res.status(403).json({ message: 'Requiere rol de Staff o Administrador' });
+    }
+};
+
+module.exports = { verifyToken, isAdmin, isStaffOrAdmin };
